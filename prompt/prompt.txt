@@ -1,0 +1,72 @@
+
+2) Napisz mi proponowana Strukture danych. oto pierwsze foldery w katalogu glownym projektu
+setup/ - w dalszym etapie stworzymy instalator, po zainstalowaniu plik setup będzie trafiać do tego katalogu
+prompt/ tutaj będę wrzucać prompty tymczasowe przy tworzeniu do ai
+tmp/ rozne pliki tymczasowe
+
+Zasada działania.
+Mam już napisany skrypt, który pobiera cyklicznie plik .csv z danymi (przykładowy export_20241218_100313.csv)
+dane są zapisywane tak:
+PrdRef;RecID;CrtDate
+
+Program po zeskanowaniu kodu kreskowego.
+Kod zapisany w formacie: PO#62849 gdzie numerem jest RecID z bazy danych.
+Następnie skrypt na podstawie RecID wyszukuje rysunek. 
+
+Rysunek zawiera się w PrdRef 
+np 12_S235_SL40034102_p7_1st_GS_3310_1 nr rysunku to 3człon (rozdzielony "_") czyli SL40034102
+
+Chce aby projekt skladal się z małych skryptow, które na końcu polacze ze soba i które będą wspolpracowac.
+Operator skanuje, wyswietla mu się rysunek. 
+Rysunki są w katalogu na dysku sieciowym QNAP.
+Na dysku serwera jest baza danych, z niej skryptem pobieramy plik csv.
+skanowanie odbywa się na tabletach android. skanerem.
+
+najpierw potrzebuje strukturę danych,
+potem będziemy po kolei pracować nad każdym skryptem.
+
+
+
+wstępny mechanizm aplikacji webowej
+from flask import Flask, request, render_template
+import pandas as pd
+
+app = Flask(__name__)
+
+# Wczytanie pliku XLSX
+data = pd.read_excel('data.xlsx')
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/search', methods=['POST'])
+def search():
+    barcode = request.form['barcode']  # Odbierz kod kreskowy z formularza
+    rec_id = barcode.split('#')[-1]  # Wyodrębnij RecID z kodu
+    
+    # Wyszukiwanie w pliku
+    result = data[data['RecID'] == int(rec_id)]
+    
+    if not result.empty:
+        prd_ref = result.iloc[0]['PrdRef']
+        cdate = result.iloc[0]['CDate']
+        return f"Znaleziono rysunek: {prd_ref}, Data: {cdate}"
+    else:
+        return "Nie znaleziono rysunku dla podanego kodu."
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
+
+
+
+
+
+1)Projekt_wyszukaj_rysunek_po_kodzie
+
+
+
+Tworzymy projekt do wyszukiwania rysunków po zeskanowaniu kodu kreskowego. 
+
+Napisz mi checkliste krokow, aby latwiej mi było zaprojektować proces. pomysły, technologie i rozwiązania szczegolowe napisze później. teraz chce zadania do sprawnego projektowania wypisac
