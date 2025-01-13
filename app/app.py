@@ -7,7 +7,8 @@ app = Flask(__name__)
 
 # Load CSV data
 data_path = "app/data/export.csv"
-dokumentacja_path = "\\\\QNAP-ENERGO\\tmp\\dokumentacja_TEST_SKANERA"
+#dokumentacja_path = "\\\\QNAP-ENERGO\\tmp\\dokumentacja_TEST_SKANERA"
+dokumentacja_path = "\\\\QNAP-ENERGO\\Dokumentacja_rysunki\\001. GIĘCIE" 
 try:
     data = pd.read_csv(data_path, sep=';')
 except Exception as e:
