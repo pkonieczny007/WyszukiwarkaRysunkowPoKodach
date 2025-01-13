@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 from flask import Flask, request, send_file
-from app.modules.search import find_file  # Import funkcji wyszukiwania
+from modules.search import find_file  # Import funkcji wyszukiwania
 
 # Flask app logic
 app = Flask(__name__)
