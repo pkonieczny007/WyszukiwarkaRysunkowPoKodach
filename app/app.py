@@ -31,28 +31,31 @@ def search():
         if not result.empty:
             prd_ref = result.iloc[0]['PrdRef']
             try:
-                # Extract drawing number and order number
+                # Extract drawing number and optionally order number
                 parts = prd_ref.split('_')
                 drawing_number = parts[2]  # rysunek
-                order_number = parts[6]    # zlecenie
+                order_number = parts[6] if len(parts) > 6 else None
+
+                # Initialize found_file
+                found_file = None
 
                 # Search for folder containing order number
-                found_file = None
-                for root, dirs, files in os.walk(dokumentacja_path):
-                    for dir_name in dirs:
-                        if order_number in dir_name:
-                            order_folder = os.path.join(root, dir_name)
-                            for sub_root, _, sub_files in os.walk(order_folder):
-                                for file in sub_files:
-                                    if file.startswith(drawing_number) and file.endswith('.pdf'):
-                                        found_file = os.path.join(sub_root, file)
+                if order_number:
+                    for root, dirs, files in os.walk(dokumentacja_path):
+                        for dir_name in dirs:
+                            if order_number in dir_name:
+                                order_folder = os.path.join(root, dir_name)
+                                for sub_root, _, sub_files in os.walk(order_folder):
+                                    for file in sub_files:
+                                        if file.startswith(drawing_number) and file.endswith('.pdf'):
+                                            found_file = os.path.join(sub_root, file)
+                                            break
+                                    if found_file:
                                         break
-                                if found_file:
-                                    break
-                    if found_file:
-                        break
+                        if found_file:
+                            break
 
-                # Search entire dokumentacja_path if not found
+                # Search entire dokumentacja_path if not found or no order_number
                 if not found_file:
                     for root, _, files in os.walk(dokumentacja_path):
                         for file in files:
