@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 from flask import Flask, request, send_file
+from app.modules.search import find_file  # Import funkcji wyszukiwania
 
 # Flask app logic
 app = Flask(__name__)
@@ -36,66 +37,8 @@ def search():
                 drawing_number = parts[2]  # rysunek
                 order_number = parts[6] if len(parts) > 6 else None
 
-                # Initialize found_file
-                found_file = None
-
-                # Search for folder containing order number
-                if order_number:
-                    for root, dirs, files in os.walk(dokumentacja_path):
-                        for dir_name in dirs:
-                            if order_number in dir_name:
-                                order_folder = os.path.join(root, dir_name)
-                                for sub_root, _, sub_files in os.walk(order_folder):
-                                    for file in sub_files:
-                                        if file.startswith(drawing_number) and file.endswith('.pdf'):
-                                            found_file = os.path.join(sub_root, file)
-                                            break
-                                    if found_file:
-                                        break
-                        if found_file:
-                            break
-
-                # Search entire dokumentacja_path if not found or no order_number
-                if not found_file:
-                    for root, _, files in os.walk(dokumentacja_path):
-                        for file in files:
-                            if file.startswith(drawing_number) and file.endswith('.pdf'):
-                                found_file = os.path.join(root, file)
-                                break
-                        if found_file:
-                            break
-
-                # Search realizowane_path if still not found
-                if not found_file:
-                    for root, _, files in os.walk(realizowane_path):
-                        for file in files:
-                            if file.startswith(drawing_number) and file.endswith('.pdf'):
-                                found_file = os.path.join(root, file)
-                                break
-                        if found_file:
-                            break
-
-                # If still not found, try searching for files containing the drawing number
-                if not found_file:
-                    if drawing_number.startswith("SL"):
-                        return f"<h1>Nie znaleziono rysunku dla numeru: {drawing_number}</h1><a href='/'>Wróć</a>"
-                    else:
-                        for root, _, files in os.walk(dokumentacja_path):
-                            for file in files:
-                                if drawing_number in file and file.endswith('.pdf'):
-                                    found_file = os.path.join(root, file)
-                                    break
-                            if found_file:
-                                break
-
-                        if not found_file:
-                            for root, _, files in os.walk(realizowane_path):
-                                for file in files:
-                                    if drawing_number in file and file.endswith('.pdf'):
-                                        found_file = os.path.join(root, file)
-                                        break
-                                if found_file:
-                                    break
+                # Use the external search function
+                found_file = find_file(drawing_number, order_number, dokumentacja_path, realizowane_path)
 
                 # Return the file or error
                 if found_file:
