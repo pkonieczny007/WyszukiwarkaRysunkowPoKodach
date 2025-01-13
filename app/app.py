@@ -1,6 +1,6 @@
 import os
 import pandas as pd
-from flask import Flask, request, render_template
+from flask import Flask, request, send_file
 
 # Flask app logic
 app = Flask(__name__)
@@ -8,17 +8,16 @@ app = Flask(__name__)
 # Load CSV data
 data_path = "app/data/export.csv"
 dokumentacja_path = "\\\\QNAP-ENERGO\\Dokumentacja_rysunki\\001. GIĘCIE"
-realizowane_folder = "\\\\QNAP-ENERGO\\Dokumentacja_rysunki\\00 ZREALIZOWANO"
+realizowane_path = "\\\\QNAP-ENERGO\\Dokumentacja_rysunki\\001. GIĘCIE\\00 ZREALIZOWANO"
 try:
     data = pd.read_csv(data_path, sep=';')
-    print("Dane załadowane poprawnie z:", data_path)
 except Exception as e:
     print(f"Error loading data from {data_path}: {e}")
     data = pd.DataFrame()
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return "<h1>Wyszukiwarka rysunków</h1><form method='POST' action='/search'><input type='text' name='barcode' placeholder='Wprowadź RecID'><button type='submit'>Szukaj</button></form>"
 
 @app.route('/search', methods=['POST'])
 def search():
@@ -26,50 +25,65 @@ def search():
     try:
         # Extract RecID from barcode
         rec_id = int(barcode.split('#')[-1]) if '#' in barcode else int(barcode)
-        print(f"RecID odczytany: {rec_id}")
-
+        
         # Search for PrdRef
         result = data[data['RecID'] == rec_id]
         if not result.empty:
             prd_ref = result.iloc[0]['PrdRef']
-            print(f"PrdRef znaleziony: {prd_ref}")
             try:
                 # Extract drawing number and order number
                 parts = prd_ref.split('_')
                 drawing_number = parts[2]  # rysunek
                 order_number = parts[6]    # zlecenie
-                print(f"Numer rysunku: {drawing_number}, Numer zlecenia: {order_number}")
 
-                # Search folder by order number
-                folder_path = os.path.join(dokumentacja_path, order_number)
-                found_files = []
+                # Search for folder containing order number
+                found_file = None
+                for root, dirs, files in os.walk(dokumentacja_path):
+                    for dir_name in dirs:
+                        if order_number in dir_name:
+                            order_folder = os.path.join(root, dir_name)
+                            for sub_root, _, sub_files in os.walk(order_folder):
+                                for file in sub_files:
+                                    if file.startswith(drawing_number) and file.endswith('.pdf'):
+                                        found_file = os.path.join(sub_root, file)
+                                        break
+                                if found_file:
+                                    break
+                    if found_file:
+                        break
 
-                # Search specific order folder
-                if os.path.exists(folder_path):
-                    for root, _, files in os.walk(folder_path):
+                # Search entire dokumentacja_path if not found
+                if not found_file:
+                    for root, _, files in os.walk(dokumentacja_path):
                         for file in files:
                             if file.startswith(drawing_number) and file.endswith('.pdf'):
-                                found_files.append(os.path.join(root, file))
+                                found_file = os.path.join(root, file)
+                                break
+                        if found_file:
+                            break
 
-                # Search "00 ZREALIZOWANO" folder if no results
-                if not found_files:
-                    for root, _, files in os.walk(realizowane_folder):
+                # Search realizowane_path if still not found
+                if not found_file:
+                    for root, _, files in os.walk(realizowane_path):
                         for file in files:
                             if file.startswith(drawing_number) and file.endswith('.pdf'):
-                                found_files.append(os.path.join(root, file))
+                                found_file = os.path.join(root, file)
+                                break
+                        if found_file:
+                            break
 
-                # Render results
-                if found_files:
-                    return render_template('results.html', main_file=found_files[0], additional_files=found_files[1:])
+                # Return the file or error
+                if found_file:
+                    return send_file(found_file, mimetype='application/pdf')
                 else:
-                    return render_template('error.html', message=f"Nie znaleziono rysunków dla numeru: {drawing_number}")
+                    return f"<h1>Nie znaleziono rysunku dla numeru: {drawing_number}</h1><a href='/'>Wróć</a>"
 
             except IndexError:
-                return render_template('error.html', message=f"Nie udało się wyodrębnić informacji z PrdRef: {prd_ref}")
+                return f"<h1>Nie udało się wyodrębnić informacji z PrdRef: {prd_ref}</h1><a href='/'>Wróć</a>"
         else:
-            return render_template('error.html', message="Nie znaleziono PrdRef dla podanego kodu.")
+            return "<h1>Nie znaleziono PrdRef dla podanego kodu.</h1><a href='/'>Wróć</a>"
     except ValueError:
-        return render_template('error.html', message="Nieprawidłowy format kodu.")
+        return "<h1>Nieprawidłowy format kodu.</h1><a href='/'>Wróć</a>"
 
 if __name__ == '__main__':
     app.run(debug=True)
