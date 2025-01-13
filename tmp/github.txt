@@ -1,1 +1,4 @@
-git commit -am "linki" ; git push
+git commit -am "REORGANIZACJA PROJEKTU i dodanie modułu search.py" ; git push
+
+git add . ; git commit -m "Dodano nowe pliki i zmiany w projekcie" ; git push
+
