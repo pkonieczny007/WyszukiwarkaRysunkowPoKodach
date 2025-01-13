@@ -75,6 +75,28 @@ def search():
                         if found_file:
                             break
 
+                # If still not found, try searching for files containing the drawing number
+                if not found_file:
+                    if drawing_number.startswith("SL"):
+                        return f"<h1>Nie znaleziono rysunku dla numeru: {drawing_number}</h1><a href='/'>Wróć</a>"
+                    else:
+                        for root, _, files in os.walk(dokumentacja_path):
+                            for file in files:
+                                if drawing_number in file and file.endswith('.pdf'):
+                                    found_file = os.path.join(root, file)
+                                    break
+                            if found_file:
+                                break
+
+                        if not found_file:
+                            for root, _, files in os.walk(realizowane_path):
+                                for file in files:
+                                    if drawing_number in file and file.endswith('.pdf'):
+                                        found_file = os.path.join(root, file)
+                                        break
+                                if found_file:
+                                    break
+
                 # Return the file or error
                 if found_file:
                     return send_file(found_file, mimetype='application/pdf')
