@@ -1,39 +1,11 @@
-import os
 import pandas as pd
 from flask import Flask, request, render_template
-
-def create_project_structure(base_path):
-    structure = {
-        "app": [
-            "templates",
-            "static",
-            "data",
-            "modules",
-        ],
-        "setup": [],
-        "prompt": [],
-        "tmp": [],
-        "tests": []
-    }
-
-    for folder, subfolders in structure.items():
-        folder_path = os.path.join(base_path, folder)
-        os.makedirs(folder_path, exist_ok=True)
-        for subfolder in subfolders:
-            os.makedirs(os.path.join(folder_path, subfolder), exist_ok=True)
-
-    # Create common files
-    open(os.path.join(base_path, "README.md"), 'w').close()
-    open(os.path.join(base_path, "app", "app.py"), 'w').close()
-    open(os.path.join(base_path, "app", "config.py"), 'w').close()
-
-    print(f"Struktura projektu utworzona w {base_path}")
 
 # Flask app logic
 app = Flask(__name__)
 
 # Load CSV data
-data_path = "app/data/export.csv"
+data_path = "data/export.csv"
 try:
     data = pd.read_csv(data_path, sep=';')
 except Exception as e:
@@ -68,7 +40,3 @@ def search():
 
 if __name__ == '__main__':
     app.run(debug=True)
-
-# Example usage
-base_directory = "./WyszukiwarkaRysunkowPoKodach"
-create_project_structure(base_directory)
