@@ -1,0 +1,33 @@
+kontynuujmy wykonywanie programu
+zróbmy zmiany aby program działał w taki sposób
+
+po uruchomieniu app.py
+wyświetla się jak do tej pory okno wyszukiwania
+
+po wprowadzeniu RecID (lub op#RecID lub OP#RecID) przeszukiwany zostaje folder "dokumentacja" w następujący sposób
+
+1. ścieżka do folderu dokumentacja to:  \\QNAP-ENERGO\tmp\dokumentacja_TEST_SKANERA
+która znajduje się na dysku sieciowym QNAP
+
+2. Na podstawie RecID sprawdzany jest odpowiadający jej PrdRef, następnie wyszukiwanie odbywa się poprzez 
+
+nazwa PrdRef składa się z informacji oddzielonych znakami "_"
+oto informacje:
+grubosc_gatunek_rysunek_pozycja_ilosc_technologia_zlecenie_indeks
+
+szukamy na podstawie rysunek
+
+np.
+dla
+4_S235_SL6049400_p2_1st_GS_9517_
+szukamy
+SL6049400
+
+Szukanie odbywa się sprawdzamy folder dokumentacja czy występuje folder w którym jest nazwa z numeru zlecenia
+dla przykładu, 
+9517
+gdy nie ma takiej informacji przeszykujemy cały folder dokumentacja.
+
+szukamy aby nazwa rysunku rozpoczynała się od naszej zmiennej rysunek i była w formacie .tif
+
+gdy rysunek zostanie odnaleziony otwieramy go w przeglądarce, gdy nie napisz komunikat.
