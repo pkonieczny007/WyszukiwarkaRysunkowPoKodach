@@ -5,7 +5,7 @@ from flask import Flask, request, render_template
 app = Flask(__name__)
 
 # Load CSV data
-data_path = "data/export.csv"
+data_path = "app/data/export.csv"
 try:
     data = pd.read_csv(data_path, sep=';')
 except Exception as e:
