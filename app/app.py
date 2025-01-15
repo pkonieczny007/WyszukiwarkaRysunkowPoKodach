@@ -8,11 +8,11 @@ app = Flask(__name__)
 
 # Load CSV data
 
-data_path = r"C:\PYTHON\PROJEKT_WYSZUKAJ_RYSUNEK_PO_KODZIE\WyszukiwarkaRysunkowPoKodach\app\data" #ścieżka na laptopie
-dokumentacja_path = r"\\QNAP-ENERGO\Dokumentacja_rysunki\001. GIĘCIE"
+data_path = r"C:\PYTHON\PROJEKT_WYSZUKAJ_RYSUNEK_PO_KODZIE\WyszukiwarkaRysunkowPoKodach\app\data\export.csv" #ścieżka na laptopie
+#dokumentacja_path = r"\\QNAP-ENERGO\Dokumentacja_rysunki\001. GIĘCIE"
 realizowane_path = r"\\QNAP-ENERGO\Dokumentacja_rysunki\001. GIĘCIE\00 ZREALIZOWANO"
 
-#dokumentacja_path = "\\\\QNAP-ENERGO\\Dokumentacja_rysunki\\001. GIĘCIE"
+dokumentacja_path = "\\\\QNAP-ENERGO\\Dokumentacja_rysunki\\001. GIĘCIE"
 #realizowane_path = "\\\\QNAP-ENERGO\\Dokumentacja_rysunki\\001. GIĘCIE\\00 ZREALIZOWANO"
 #data_path = r"C:\WyszukiwarkaRysunkowPoKodach\app\data\export.csv" #ścieżka na serwerze
 #data_path = "app/data/export.csv"
