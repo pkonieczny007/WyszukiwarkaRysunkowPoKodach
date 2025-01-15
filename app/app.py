@@ -7,9 +7,16 @@ from modules.search import find_file  # Import funkcji wyszukiwania
 app = Flask(__name__)
 
 # Load CSV data
-data_path = "app/data/export.csv"
-dokumentacja_path = "\\\\QNAP-ENERGO\\Dokumentacja_rysunki\\001. GIĘCIE"
-realizowane_path = "\\\\QNAP-ENERGO\\Dokumentacja_rysunki\\001. GIĘCIE\\00 ZREALIZOWANO"
+
+data_path = r"C:\PYTHON\PROJEKT_WYSZUKAJ_RYSUNEK_PO_KODZIE\WyszukiwarkaRysunkowPoKodach\app\data" #ścieżka na laptopie
+dokumentacja_path = r"\\QNAP-ENERGO\Dokumentacja_rysunki\001. GIĘCIE"
+realizowane_path = r"\\QNAP-ENERGO\Dokumentacja_rysunki\001. GIĘCIE\00 ZREALIZOWANO"
+
+#dokumentacja_path = "\\\\QNAP-ENERGO\\Dokumentacja_rysunki\\001. GIĘCIE"
+#realizowane_path = "\\\\QNAP-ENERGO\\Dokumentacja_rysunki\\001. GIĘCIE\\00 ZREALIZOWANO"
+#data_path = r"C:\WyszukiwarkaRysunkowPoKodach\app\data\export.csv" #ścieżka na serwerze
+#data_path = "app/data/export.csv"
+
 try:
     data = pd.read_csv(data_path, sep=';')
 except Exception as e:
