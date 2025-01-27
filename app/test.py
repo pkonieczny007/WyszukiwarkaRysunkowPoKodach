@@ -6,22 +6,10 @@ from modules.search import find_file  # Import funkcji wyszukiwania
 # Flask app logic
 app = Flask(__name__)
 
-# Load CSV data
-
-#data_path = r"C:\PYTHON\PROJEKT_WYSZUKAJ_RYSUNEK_PO_KODZIE\WyszukiwarkaRysunkowPoKodach\app\data\export.csv" #ścieżka na laptopie
+# Ścieżki do plików
 dokumentacja_path = r"\\QNAP-ENERGO\Dokumentacja_rysunki\001. GIĘCIE"
 realizowane_path = r"\\QNAP-ENERGO\Dokumentacja_rysunki\001. GIĘCIE\00 ZREALIZOWANO"
-
-#dokumentacja_path = "\\\\QNAP-ENERGO\\Dokumentacja_rysunki\\001. GIĘCIE"
-#realizowane_path = "\\\\QNAP-ENERGO\\Dokumentacja_rysunki\\001. GIĘCIE\\00 ZREALIZOWANO"
-data_path = r"C:\WyszukiwarkaRysunkowPoKodach\app\data\export.csv" #ścieżka na serwerze
-#data_path = "app/data/export.csv"
-
-try:
-    data = pd.read_csv(data_path, sep=';')
-except Exception as e:
-    print(f"Error loading data from {data_path}: {e}")
-    data = pd.DataFrame()
+data_path = r"C:\WyszukiwarkaRysunkowPoKodach\app\data\export.csv"
 
 @app.route('/')
 def index():
@@ -30,6 +18,13 @@ def index():
 @app.route('/search', methods=['POST'])
 def search():
     barcode = request.form['barcode']
+    
+    # Wczytaj dane dynamicznie
+    try:
+        data = pd.read_csv(data_path, sep=';')
+    except Exception as e:
+        return f"<h1>Błąd wczytywania danych: {e}</h1><a href='/'>Wróć</a>"
+    
     try:
         # Extract RecID from barcode
         rec_id = int(barcode.split('#')[-1]) if '#' in barcode else int(barcode)
@@ -61,7 +56,4 @@ def search():
         return "<h1>Nieprawidłowy format kodu.</h1><a href='/'>Wróć</a>"
 
 if __name__ == '__main__':
-    #app.run(debug=True)
-    app.run(host='0.0.0.0', port=5000, debug=True) #http
-    #app.run(host='0.0.0.0', port=5000, ssl_context=('localhost.pem', 'localhost-key.pem')) #https
-
+    app.run(host='0.0.0.0', port=5000, debug=True)
